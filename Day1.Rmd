@@ -1,0 +1,80 @@
+---
+title: "Day_1_tasks"
+author: "Szymon Berezicki"
+date: "2026-04-20"
+output: html_document
+---
+### Loading packages
+Install and load tidyverse
+
+```{r packages, echo = FALSE}
+install.packages("tidyverse")
+install.packages("ggplot2")
+install.packages("renv")
+library(tidyverse)
+library(ggplot2)
+library(renv)
+```
+Use 'renv::snapshot()'
+
+### Loading the dataset
+
+Assign iris dataset 
+```{r data, echo=FALSE}
+data(iris)
+```
+
+Explore the dataset 
+```{r explore}
+head(data)
+summary(data)
+str(data)
+```
+
+Explore data manipulation with tidyvers
+```{r tidyverse, echo=TRUE}
+df <- tbl_df(data)
+filter(df, species == "setosa")
+filter(df, Petal.Length > 2 & Sepal.Length > 4)
+arrange(df, Sepal.Lentgh, Petal.Length)
+arrange(df, desc(Petal.Length))
+```
+
+```{r tidy}
+select(df, Species, Petal.Length, Petal.Width)
+mutate(df, log.Sepal.length = log(Sepal.Length))
+```
+
+
+```{r summarise}
+summarise(df, mean(Petal.Length))
+group_by(df, Species) %>% 
+  count()
+df %>%
+  group_by(Species) %>%
+  summarise(mean(Petal.Length))
+```
+
+Plotting the data
+
+```{r plots}
+labels_df <- df %>% 
+  group_by(Species) %>%
+  summarise(Petal.Length = mean(Petal.Length), Petal.Width = mean(Petal.Width))
+
+ggplot(df, aes(Petal.Length, Petal.Width, color = Species)) + 
+  geom_point() +
+  xlab("Petal Length (cm)") +
+  ylab("Petal Width (cm)") +
+  geom_label(data = labels_df,
+            aes(label = Species),
+            fontface = 'bold')
+
+ggplot(df, aes(Sepal.Length)) +
+  geom_histogram(binwidth = 0.2,
+                 color = 'black',
+                 aes(fill = Species)) +
+  xlab("Sepal Length (cm)") +
+  ylab("Frequency") +
+  ggtitle("Frequency of Sepal Length")
+``` 
